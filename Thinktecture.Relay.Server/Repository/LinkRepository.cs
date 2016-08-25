@@ -15,7 +15,8 @@ namespace Thinktecture.Relay.Server.Repository
         private readonly IPasswordHash _passwordHash;
         private readonly IConfiguration _configuration;
 
-        private static readonly Dictionary<string, PasswordInformation> _successfullyValidatedUsernamesAndPasswords = new Dictionary<string, PasswordInformation>();
+        private static readonly Dictionary<string, PasswordInformation> _successfullyValidatedUsernamesAndPasswords =
+            new Dictionary<string, PasswordInformation>();
 
         public LinkRepository(IPasswordHash passwordHash, IConfiguration configuration)
         {
@@ -221,7 +222,7 @@ namespace Thinktecture.Relay.Server.Repository
                     Iterations = link.Iterations,
                     Salt = link.Salt
                 };
-                
+
                 var cacheKey = userName + "/" + password;
                 PasswordInformation previousInfo = null;
 

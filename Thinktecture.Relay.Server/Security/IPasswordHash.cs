@@ -15,6 +15,7 @@ namespace Thinktecture.Relay.Server.Security
         /// <param name="password">The password to hash.</param>
         /// <returns>The hash of the password.</returns>
         PasswordInformation CreatePasswordInformation(byte[] password);
+
         /// <summary>
         /// Validates a password (base64 string) given a hash of the correct one.
         /// </summary>

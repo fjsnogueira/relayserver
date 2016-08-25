@@ -8,7 +8,7 @@ namespace Thinktecture.Relay.Server.Repository
         public DbSet<DbLink> Links { get; set; }
         public DbSet<DbRequestLogEntry> RequestLogEntries { get; set; }
         public DbSet<DbUser> Users { get; set; }
-		public DbSet<DbTraceConfiguration> TraceConfigurations { get; set; }
+        public DbSet<DbTraceConfiguration> TraceConfigurations { get; set; }
 
         public RelayContext()
         {

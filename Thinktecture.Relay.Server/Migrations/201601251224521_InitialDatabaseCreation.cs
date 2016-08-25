@@ -2,14 +2,14 @@ namespace Thinktecture.Relay.Server.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class InitialDatabaseCreation : DbMigration
     {
         public override void Up()
         {
             CreateTable(
-                "dbo.Links",
-                c => new
+                    "dbo.Links",
+                    c => new
                     {
                         Id = c.Guid(nullable: false),
                         Identity = c.Int(nullable: false, identity: true),
@@ -27,10 +27,10 @@ namespace Thinktecture.Relay.Server.Migrations
                 .PrimaryKey(t => t.Id, clustered: false)
                 .Index(t => t.Identity, clustered: true)
                 .Index(t => t.UserName, unique: true, name: "UserNameIndex");
-            
+
             CreateTable(
-                "dbo.RequestLogEntries",
-                c => new
+                    "dbo.RequestLogEntries",
+                    c => new
                     {
                         Id = c.Guid(nullable: false),
                         Identity = c.Int(nullable: false, identity: true),
@@ -50,10 +50,10 @@ namespace Thinktecture.Relay.Server.Migrations
                 .ForeignKey("dbo.Links", t => t.LinkId, cascadeDelete: true)
                 .Index(t => t.Identity, clustered: true)
                 .Index(t => t.LinkId);
-            
+
             CreateTable(
-                "dbo.TraceConfigurations",
-                c => new
+                    "dbo.TraceConfigurations",
+                    c => new
                     {
                         Id = c.Guid(nullable: false),
                         Identity = c.Int(nullable: false, identity: true),
@@ -66,10 +66,10 @@ namespace Thinktecture.Relay.Server.Migrations
                 .ForeignKey("dbo.Links", t => t.LinkId, cascadeDelete: true)
                 .Index(t => t.Identity, clustered: true)
                 .Index(t => t.LinkId);
-            
+
             CreateTable(
-                "dbo.Users",
-                c => new
+                    "dbo.Users",
+                    c => new
                     {
                         Id = c.Guid(nullable: false),
                         Identity = c.Int(nullable: false, identity: true),
@@ -82,21 +82,20 @@ namespace Thinktecture.Relay.Server.Migrations
                 .PrimaryKey(t => t.Id, clustered: false)
                 .Index(t => t.Identity, clustered: true)
                 .Index(t => t.UserName, unique: true, name: "UserNameIndex");
-            
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.TraceConfigurations", "LinkId", "dbo.Links");
             DropForeignKey("dbo.RequestLogEntries", "LinkId", "dbo.Links");
             DropIndex("dbo.Users", "UserNameIndex");
-            DropIndex("dbo.Users", new[] { "Identity" });
-            DropIndex("dbo.TraceConfigurations", new[] { "LinkId" });
-            DropIndex("dbo.TraceConfigurations", new[] { "Identity" });
-            DropIndex("dbo.RequestLogEntries", new[] { "LinkId" });
-            DropIndex("dbo.RequestLogEntries", new[] { "Identity" });
+            DropIndex("dbo.Users", new[] {"Identity"});
+            DropIndex("dbo.TraceConfigurations", new[] {"LinkId"});
+            DropIndex("dbo.TraceConfigurations", new[] {"Identity"});
+            DropIndex("dbo.RequestLogEntries", new[] {"LinkId"});
+            DropIndex("dbo.RequestLogEntries", new[] {"Identity"});
             DropIndex("dbo.Links", "UserNameIndex");
-            DropIndex("dbo.Links", new[] { "Identity" });
+            DropIndex("dbo.Links", new[] {"Identity"});
             DropTable("dbo.Users");
             DropTable("dbo.TraceConfigurations");
             DropTable("dbo.RequestLogEntries");

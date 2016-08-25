@@ -18,7 +18,7 @@ namespace Thinktecture.Relay.Server.Controller.ManagementWeb
         [HttpGet]
         public IHttpActionResult NeedsFirstTimeSetup()
         {
-            return _userRepository.Any() ? Ok(): (IHttpActionResult) new StatusCodeResult(HttpStatusCode.TemporaryRedirect, Request);
+            return _userRepository.Any() ? Ok() : (IHttpActionResult) new StatusCodeResult(HttpStatusCode.TemporaryRedirect, Request);
         }
     }
 }

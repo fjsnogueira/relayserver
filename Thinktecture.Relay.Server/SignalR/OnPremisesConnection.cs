@@ -17,7 +17,8 @@ namespace Thinktecture.Relay.Server.SignalR
         private readonly ILogger _logger;
         private readonly IOnPremisesMessageHandler _messageHandler;
 
-        public OnPremisesConnection(IBackendCommunication backendCommunication, IPostDataTemporaryStore temporaryStore, ILogger logger, IOnPremisesMessageHandler messageHandler)
+        public OnPremisesConnection(IBackendCommunication backendCommunication, IPostDataTemporaryStore temporaryStore, ILogger logger,
+            IOnPremisesMessageHandler messageHandler)
         {
             _backendCommunication = backendCommunication;
             _temporaryStore = temporaryStore;
@@ -48,8 +49,10 @@ namespace Thinktecture.Relay.Server.SignalR
         private async Task ForwardClientRequest(string connectionId, IOnPremiseConnectorRequest onPremiseConnectorRequest)
         {
             _logger.Debug("Forwarding client request to connection '{0}'", connectionId);
-            _logger.Trace("Forwarding client request to connection '{0}'. request-id={1}, http-method={2}, url={3}, origin-id={4}, body-length={5}",
-                connectionId, onPremiseConnectorRequest.RequestId, onPremiseConnectorRequest.HttpMethod, onPremiseConnectorRequest.Url, onPremiseConnectorRequest.OriginId, onPremiseConnectorRequest.Body != null ? onPremiseConnectorRequest.Body.Length : 0);
+            _logger.Trace(
+                "Forwarding client request to connection '{0}'. request-id={1}, http-method={2}, url={3}, origin-id={4}, body-length={5}",
+                connectionId, onPremiseConnectorRequest.RequestId, onPremiseConnectorRequest.HttpMethod, onPremiseConnectorRequest.Url,
+                onPremiseConnectorRequest.OriginId, onPremiseConnectorRequest.Body != null ? onPremiseConnectorRequest.Body.Length : 0);
 
             var onPremiseTargetRequest = new OnPremiseTargetRequest()
             {
@@ -77,7 +80,7 @@ namespace Thinktecture.Relay.Server.SignalR
         }
 
         protected override Task OnReceived(IRequest request, string connectionId, string data)
-        {   
+        {
             _messageHandler.Received(Connection, request, connectionId, data);
             return base.OnReceived(request, connectionId, data);
         }
@@ -95,7 +98,7 @@ namespace Thinktecture.Relay.Server.SignalR
 
         private static string GetOnPremiseIdFromRequest(IRequest request)
         {
-            string onPremiseId = ((ClaimsPrincipal)request.User).Claims.Single(c => c.Type == "OnPremiseId").Value;
+            string onPremiseId = ((ClaimsPrincipal) request.User).Claims.Single(c => c.Type == "OnPremiseId").Value;
             return onPremiseId;
         }
 
@@ -106,7 +109,6 @@ namespace Thinktecture.Relay.Server.SignalR
                 ConnectionId = connectionId,
                 OnPremiseId = onPremiseId,
                 RequestAction = async cr => await ForwardClientRequest(connectionId, cr),
-                
 #pragma warning disable 4014
                 SendHeartbeatAction = cr => ForwardClientRequest(connectionId, cr),
 #pragma warning restore 4014
@@ -132,7 +134,7 @@ namespace Thinktecture.Relay.Server.SignalR
         private static T Get<T>(IDictionary<string, object> env, string key)
         {
             object value;
-            return env.TryGetValue(key, out value) ? (T)value : default(T);
+            return env.TryGetValue(key, out value) ? (T) value : default(T);
         }
     }
 }

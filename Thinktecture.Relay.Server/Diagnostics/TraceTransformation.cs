@@ -10,7 +10,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 {
     public class TraceTransformation : ITraceTransformation
     {
-        private static readonly IEnumerable<string> RestrictedHeaders = new []
+        private static readonly IEnumerable<string> RestrictedHeaders = new[]
         {
             "Content-Encoding"
         };

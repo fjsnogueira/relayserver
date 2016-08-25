@@ -21,5 +21,5 @@ namespace Thinktecture.Relay.Server.Communication
             LinkId = linkId;
             SendHeartbeatAction = sendHeartbeatAction;
         }
-    } 
+    }
 }

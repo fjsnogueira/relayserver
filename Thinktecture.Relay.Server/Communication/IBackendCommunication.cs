@@ -8,17 +8,17 @@ using Thinktecture.Relay.Server.OnPremise;
 
 namespace Thinktecture.Relay.Server.Communication
 {
-	public interface IBackendCommunication : IDisposable
-	{
-		string OriginId { get; }
-		Task<IOnPremiseTargetReponse> GetResponseAsync(string requestId);
-		Task SendOnPremiseConnectorRequest(string onPremiseId, IOnPremiseConnectorRequest onPremiseConnectorRequest);
-	    void RegisterOnPremise(RegistrationInformation registrationInformation);
-		void UnregisterOnPremise(string connectionId);
-		Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetReponse reponse);
-	    bool IsRegistered(string connectionId);
-	    List<string> GetConnections(string linkId);
-	    void HeartbeatReceived(string connectionId);
-	    void EnableConnectionFeatures(Features features, string connectionId);
-	}
+    public interface IBackendCommunication : IDisposable
+    {
+        string OriginId { get; }
+        Task<IOnPremiseTargetReponse> GetResponseAsync(string requestId);
+        Task SendOnPremiseConnectorRequest(string onPremiseId, IOnPremiseConnectorRequest onPremiseConnectorRequest);
+        void RegisterOnPremise(RegistrationInformation registrationInformation);
+        void UnregisterOnPremise(string connectionId);
+        Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetReponse reponse);
+        bool IsRegistered(string connectionId);
+        List<string> GetConnections(string linkId);
+        void HeartbeatReceived(string connectionId);
+        void EnableConnectionFeatures(Features features, string connectionId);
+    }
 }

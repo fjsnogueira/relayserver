@@ -31,7 +31,8 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
         private IBus _bus;
         private IDisposable _consumer;
 
-        public RabbitMqBackendCommunication(IConfiguration configuration, IRabbitMqBusFactory busFactory, IOnPremiseConnectorCallbackFactory onPremiseConnectorCallbackFactory, ILogger logger, IHeartbeatMonitor heartbeatMonitor) 
+        public RabbitMqBackendCommunication(IConfiguration configuration, IRabbitMqBusFactory busFactory,
+            IOnPremiseConnectorCallbackFactory onPremiseConnectorCallbackFactory, ILogger logger, IHeartbeatMonitor heartbeatMonitor)
             : base(logger)
         {
             _configuration = configuration;
@@ -90,7 +91,9 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             _logger.Debug("Sending client request for On-Premise Connector '{0}'", onPremiseId);
 
             var queue = DeclareOnPremiseQueue(onPremiseId);
-            await _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false, new Message<string>(JsonConvert.SerializeObject(onPremiseConnectorRequest)));
+            await
+                _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false,
+                    new Message<string>(JsonConvert.SerializeObject(onPremiseConnectorRequest)));
         }
 
         public override void RegisterOnPremise(RegistrationInformation registrationInformation)
@@ -99,13 +102,18 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
 
             UnregisterOnPremise(registrationInformation.ConnectionId);
 
-            _logger.Debug("Registering OnPremise '{0}' via connection '{1}'", registrationInformation.OnPremiseId, registrationInformation.ConnectionId);
+            _logger.Debug("Registering OnPremise '{0}' via connection '{1}'", registrationInformation.OnPremiseId,
+                registrationInformation.ConnectionId);
 
             var queue = DeclareOnPremiseQueue(registrationInformation.OnPremiseId);
 
-            var consumer = _bus.Advanced.Consume(queue, (Action<IMessage<string>, MessageReceivedInfo>) ((message, info) => registrationInformation.RequestAction(JsonConvert.DeserializeObject<OnPremiseConnectorRequest>(message.Body))));
+            var consumer = _bus.Advanced.Consume(queue,
+                (Action<IMessage<string>, MessageReceivedInfo>)
+                ((message, info) =>
+                        registrationInformation.RequestAction(JsonConvert.DeserializeObject<OnPremiseConnectorRequest>(message.Body))));
             _onPremiseConsumers[registrationInformation.ConnectionId] = consumer;
-            _onPremises[registrationInformation.ConnectionId] = new ConnectionInformation(registrationInformation.OnPremiseId, registrationInformation.SendHeartbeatAction);
+            _onPremises[registrationInformation.ConnectionId] = new ConnectionInformation(registrationInformation.OnPremiseId,
+                registrationInformation.SendHeartbeatAction);
         }
 
         private IQueue DeclareOnPremiseQueue(string onPremiseId)
@@ -126,7 +134,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             }
 
             string onPremiseId = onPremiseInformation == null ? "unknown" : onPremiseInformation.LinkId;
-            
+
             IDisposable consumer;
             if (_onPremiseConsumers.TryRemove(connectionId, out consumer))
             {
@@ -146,7 +154,9 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             _logger.Debug("Sending On-Premise Target response to origin '{0}'", originId);
 
             var queue = DeclareRelayServerQueue(originId);
-            await _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false, new Message<string>(JsonConvert.SerializeObject(reponse)));
+            await
+                _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false,
+                    new Message<string>(JsonConvert.SerializeObject(reponse)));
         }
 
         public override bool IsRegistered(string connectionId)
@@ -156,7 +166,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
 
         public override List<string> GetConnections(string linkId)
         {
-            return _onPremises.Where(p=>p.Value.LinkId.Equals(linkId, StringComparison.OrdinalIgnoreCase)).Select(p=>p.Key).ToList();
+            return _onPremises.Where(p => p.Value.LinkId.Equals(linkId, StringComparison.OrdinalIgnoreCase)).Select(p => p.Key).ToList();
         }
 
         public override void HeartbeatReceived(string connectionId)
@@ -191,7 +201,9 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             _logger.Debug("Start receiving On-Premise Target responses for origin '{0}'", originId);
 
             var queue = DeclareRelayServerQueue(originId);
-            _bus.Advanced.Consume(queue, (Action<IMessage<string>, MessageReceivedInfo>) ((message, info) => ForwardOnPremiseTargetResponse(JsonConvert.DeserializeObject<OnPremiseTargetReponse>(message.Body))));
+            _bus.Advanced.Consume(queue,
+                (Action<IMessage<string>, MessageReceivedInfo>)
+                ((message, info) => ForwardOnPremiseTargetResponse(JsonConvert.DeserializeObject<OnPremiseTargetReponse>(message.Body))));
         }
 
         private IQueue DeclareRelayServerQueue(string originId)

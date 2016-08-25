@@ -17,19 +17,19 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
         {
             _requestHeaderTransformations = new Dictionary<string, Action<HttpWebRequest, string>>()
             {
-                { "Accept", (r, v) => r.Accept = v },
-                { "Connection", (r, v) => r.Connection = v },
-                { "Content-Type", (r, v) => r.ContentType = v },
-                { "Content-Length", (r, v) => r.ContentLength = Int64.Parse(v) },
-                { "Date", (r, v) => r.Date = DateTime.ParseExact(v, "R", CultureInfo.InvariantCulture) },
-                { "Expect", null },
-                { "Host", null },
-                { "If-Modified-Since", (r, v) => r.IfModifiedSince = DateTime.ParseExact(v, "R", CultureInfo.InvariantCulture) },
-                { "Proxy-Connection", null },
-                { "Range", null },
-                { "Referer", (r, v) => r.Referer = v },
-                { "Transfer-Encoding", (r, v) => r.TransferEncoding = v },
-                { "User-Agent", (r, v) => r.UserAgent = v }
+                {"Accept", (r, v) => r.Accept = v},
+                {"Connection", (r, v) => r.Connection = v},
+                {"Content-Type", (r, v) => r.ContentType = v},
+                {"Content-Length", (r, v) => r.ContentLength = Int64.Parse(v)},
+                {"Date", (r, v) => r.Date = DateTime.ParseExact(v, "R", CultureInfo.InvariantCulture)},
+                {"Expect", null},
+                {"Host", null},
+                {"If-Modified-Since", (r, v) => r.IfModifiedSince = DateTime.ParseExact(v, "R", CultureInfo.InvariantCulture)},
+                {"Proxy-Connection", null},
+                {"Range", null},
+                {"Referer", (r, v) => r.Referer = v},
+                {"Transfer-Encoding", (r, v) => r.TransferEncoding = v},
+                {"User-Agent", (r, v) => r.UserAgent = v}
             };
         }
 
@@ -49,7 +49,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
         public async Task<IOnPremiseTargetReponse> GetResponseAsync(string url, IOnPremiseTargetRequest onPremiseTargetRequest)
         {
             _logger.Debug("Requesting response from On-Premise Target...");
-            _logger.Trace("Requesting response from On-Premise Target. url={0}, request-id={1}, origin-id", url, onPremiseTargetRequest.RequestId, onPremiseTargetRequest.OriginId);
+            _logger.Trace("Requesting response from On-Premise Target. url={0}, request-id={1}, origin-id", url,
+                onPremiseTargetRequest.RequestId, onPremiseTargetRequest.OriginId);
 
             var onPremiseTargetReponse = new OnPremiseTargetReponse()
             {
@@ -85,7 +86,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
                     onPremiseTargetReponse.StatusCode = HttpStatusCode.GatewayTimeout;
                     onPremiseTargetReponse.HttpHeaders = new Dictionary<string, string>()
                     {
-                        { "X-TTRELAY-TIMEOUT", "On-Premise Target" }
+                        {"X-TTRELAY-TIMEOUT", "On-Premise Target"}
                     };
                 }
                 else
@@ -94,7 +95,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 
                     using (var stream = new MemoryStream())
                     {
-                        onPremiseTargetReponse.HttpHeaders = webResponse.Headers.AllKeys.ToDictionary(n => n, n => webResponse.Headers.Get(n), StringComparer.OrdinalIgnoreCase);
+                        onPremiseTargetReponse.HttpHeaders = webResponse.Headers.AllKeys.ToDictionary(n => n,
+                            n => webResponse.Headers.Get(n), StringComparer.OrdinalIgnoreCase);
 
                         using (var responseStream = webResponse.GetResponseStream() ?? Stream.Null)
                         {
@@ -107,7 +109,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 
                 onPremiseTargetReponse.RequestFinished = DateTime.UtcNow;
 
-                _logger.Trace("Got response. status-code={0}, request-id={1}", onPremiseTargetReponse.StatusCode, onPremiseTargetReponse.RequestId);
+                _logger.Trace("Got response. status-code={0}, request-id={1}", onPremiseTargetReponse.StatusCode,
+                    onPremiseTargetReponse.RequestId);
 
                 return onPremiseTargetReponse;
             }

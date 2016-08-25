@@ -7,72 +7,70 @@ using Thinktecture.Relay.Server.OnPremise;
 
 namespace Thinktecture.Relay.Server.Http
 {
-	internal class OnPremiseRequestBuilder : IOnPremiseRequestBuilder
-	{
-		private readonly string[] _ignoredHeaders;
+    internal class OnPremiseRequestBuilder : IOnPremiseRequestBuilder
+    {
+        private readonly string[] _ignoredHeaders;
 
-		public OnPremiseRequestBuilder()
-		{
-			_ignoredHeaders = new[] { "Host", "Connection" };
-		}
+        public OnPremiseRequestBuilder()
+        {
+            _ignoredHeaders = new[] {"Host", "Connection"};
+        }
 
-		public async Task<IOnPremiseConnectorRequest> BuildFrom(HttpRequestMessage request, string originId, string pathWithoutUserName)
-		{
-			var onPremiseConnectorRequest = new OnPremiseConnectorRequest
-			{
-				RequestId = Guid.NewGuid().ToString(),
+        public async Task<IOnPremiseConnectorRequest> BuildFrom(HttpRequestMessage request, string originId, string pathWithoutUserName)
+        {
+            var onPremiseConnectorRequest = new OnPremiseConnectorRequest
+            {
+                RequestId = Guid.NewGuid().ToString(),
+                Body = await GetClientRequestBodyAsync(request.Content),
+                HttpMethod = request.Method.Method,
+                Url = pathWithoutUserName + request.RequestUri.Query,
+                HttpHeaders =
+                    request.Headers.ToDictionary(kvp => kvp.Key, kvp => CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(kvp.Value),
+                        StringComparer.OrdinalIgnoreCase),
+                OriginId = originId,
+                RequestStarted = DateTime.UtcNow
+            };
 
-				Body = await GetClientRequestBodyAsync(request.Content),
+            AddContentHeaders(onPremiseConnectorRequest, request);
+            RemoveIgnoredHeaders(onPremiseConnectorRequest);
 
-				HttpMethod = request.Method.Method,
-				Url = pathWithoutUserName + request.RequestUri.Query,
+            return onPremiseConnectorRequest;
+        }
 
-				HttpHeaders = request.Headers.ToDictionary(kvp => kvp.Key, kvp => CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(kvp.Value), StringComparer.OrdinalIgnoreCase),
+        internal async Task<byte[]> GetClientRequestBodyAsync(HttpContent content)
+        {
+            var body = await content.ReadAsByteArrayAsync();
 
-				OriginId = originId,
+            if (body.LongLength == 0L)
+            {
+                return null;
+            }
 
-				RequestStarted = DateTime.UtcNow
-			};
+            return body;
+        }
 
-			AddContentHeaders(onPremiseConnectorRequest, request);
-			RemoveIgnoredHeaders(onPremiseConnectorRequest);
+        internal string CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(IEnumerable<string> headers)
+        {
+            // HTTP RFC2616 says, that multiple headers can be combined into a comma-separated single header
 
-			return onPremiseConnectorRequest;
-		}
+            return headers.Aggregate(String.Empty, (s, v) => s + (s == String.Empty ? String.Empty : ", ") + v);
+        }
 
-		internal async Task<byte[]> GetClientRequestBodyAsync(HttpContent content)
-		{
-			var body = await content.ReadAsByteArrayAsync();
+        internal void AddContentHeaders(IOnPremiseConnectorRequest onPremiseConnectorRequest, HttpRequestMessage request)
+        {
+            foreach (var httpHeader in request.Content.Headers)
+            {
+                onPremiseConnectorRequest.HttpHeaders.Add(httpHeader.Key,
+                    CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(httpHeader.Value));
+            }
+        }
 
-			if (body.LongLength == 0L)
-			{
-				return null;
-			}
-
-			return body;
-		}
-
-		internal string CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(IEnumerable<string> headers)
-		{
-			// HTTP RFC2616 says, that multiple headers can be combined into a comma-separated single header
-
-			return headers.Aggregate(String.Empty, (s, v) => s + (s == String.Empty ? String.Empty : ", ") + v);
-		}
-
-		internal void AddContentHeaders(IOnPremiseConnectorRequest onPremiseConnectorRequest, HttpRequestMessage request)
-		{
-			foreach (var httpHeader in request.Content.Headers)
-			{
-				onPremiseConnectorRequest.HttpHeaders.Add(httpHeader.Key, CombineMultipleHttpHeaderValuesIntoOneCommaSeperatedValue(httpHeader.Value));
-			}
-		}
-
-		internal void RemoveIgnoredHeaders(OnPremiseConnectorRequest onPremiseConnectorRequest)
-		{
-			foreach (var key in _ignoredHeaders)
-			{
-				onPremiseConnectorRequest.HttpHeaders.Remove(key);
-			}
-		}
-	}
+        internal void RemoveIgnoredHeaders(OnPremiseConnectorRequest onPremiseConnectorRequest)
+        {
+            foreach (var key in _ignoredHeaders)
+            {
+                onPremiseConnectorRequest.HttpHeaders.Remove(key);
+            }
+        }
+    }
 }

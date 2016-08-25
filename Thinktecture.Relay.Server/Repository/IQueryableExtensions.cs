@@ -13,12 +13,12 @@ namespace Thinktecture.Relay.Server.Repository
         public static IQueryable<T> OrderByPropertyName<T>(this IQueryable<T> query, string column,
             SortDirection sortDirection)
         {
-            var parameter = Expression.Parameter(typeof (T), "param");
+            var parameter = Expression.Parameter(typeof(T), "param");
             var property = Expression.Property(parameter, column);
             var expression = Expression.Lambda(property, parameter);
             var method = sortDirection == SortDirection.Asc ? "OrderBy" : "OrderByDescending";
-            var types = new Type[] { query.ElementType, expression.Body.Type };
-            var result = Expression.Call(typeof (Queryable), method, types, query.Expression, expression);
+            var types = new Type[] {query.ElementType, expression.Body.Type};
+            var result = Expression.Call(typeof(Queryable), method, types, query.Expression, expression);
             return query.Provider.CreateQuery<T>(result);
         }
 

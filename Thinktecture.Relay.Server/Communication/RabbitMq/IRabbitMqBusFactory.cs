@@ -2,8 +2,8 @@
 
 namespace Thinktecture.Relay.Server.Communication.RabbitMq
 {
-	internal interface IRabbitMqBusFactory
-	{
-		IBus CreateBus();
-	}
+    internal interface IRabbitMqBusFactory
+    {
+        IBus CreateBus();
+    }
 }

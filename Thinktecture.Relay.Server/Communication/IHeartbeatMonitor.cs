@@ -11,4 +11,4 @@ namespace Thinktecture.Relay.Server.Communication
         void Initialize(ConcurrentDictionary<string, ConnectionInformation> connectionInformation, TimeSpan heatbeatTimeout, string originId);
         event ConnectionTimedOut ConnectionTimedOut;
     }
-} 
+}

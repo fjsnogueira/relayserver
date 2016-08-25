@@ -26,8 +26,10 @@ namespace Thinktecture.Relay.Server.Controller
         private readonly IPathSplitter _pathSplitter;
         private readonly ITraceManager _traceManager;
 
-        public ClientController(IBackendCommunication backendCommunication, ILogger logger, ILinkRepository linkRepository, IRequestLogger requestLogger,
-            IHttpResponseMessageBuilder httpResponseMessageBuilder, IOnPremiseRequestBuilder onPremiseRequestBuilder, IPathSplitter pathSplitter,
+        public ClientController(IBackendCommunication backendCommunication, ILogger logger, ILinkRepository linkRepository,
+            IRequestLogger requestLogger,
+            IHttpResponseMessageBuilder httpResponseMessageBuilder, IOnPremiseRequestBuilder onPremiseRequestBuilder,
+            IPathSplitter pathSplitter,
             ITraceManager traceManager)
         {
             _backendCommunication = backendCommunication;
@@ -83,10 +85,11 @@ namespace Thinktecture.Relay.Server.Controller
                 return NotFound();
             }
 
-            _logger.Trace("{0}: Building on premise connector request. Origin Id: {1}, Path: {2}", link.Id, _backendCommunication.OriginId, path);
+            _logger.Trace("{0}: Building on premise connector request. Origin Id: {1}, Path: {2}", link.Id, _backendCommunication.OriginId,
+                path);
             var onPremiseConnectorRequest =
                 (OnPremiseConnectorRequest)
-                    await _onPremiseRequestBuilder.BuildFrom(Request, _backendCommunication.OriginId, pathInformation.PathWithoutUserName);
+                await _onPremiseRequestBuilder.BuildFrom(Request, _backendCommunication.OriginId, pathInformation.PathWithoutUserName);
 
             _logger.Trace("{0}: Sending on premise connector request.", link.Id);
             await _backendCommunication.SendOnPremiseConnectorRequest(link.Id.ToString(), onPremiseConnectorRequest);
@@ -100,7 +103,7 @@ namespace Thinktecture.Relay.Server.Controller
             }
             else
             {
-                _logger.Trace("{0}: On Premise Timeout", link.Id);     
+                _logger.Trace("{0}: On Premise Timeout", link.Id);
             }
 
             var response = _httpResponseMessageBuilder.BuildFrom(onPremiseTargetReponse, link);
@@ -113,7 +116,8 @@ namespace Thinktecture.Relay.Server.Controller
                 _traceManager.Trace(onPremiseConnectorRequest, onPremiseTargetReponse, currentTraceConfigurationId.Value);
             }
 
-            _requestLogger.LogRequest(onPremiseConnectorRequest, onPremiseTargetReponse, response.StatusCode, link.Id, _backendCommunication.OriginId, path);
+            _requestLogger.LogRequest(onPremiseConnectorRequest, onPremiseTargetReponse, response.StatusCode, link.Id,
+                _backendCommunication.OriginId, path);
 
             return response;
         }

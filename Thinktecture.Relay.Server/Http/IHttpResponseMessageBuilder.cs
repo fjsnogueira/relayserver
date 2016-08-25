@@ -4,8 +4,8 @@ using Thinktecture.Relay.Server.Dto;
 
 namespace Thinktecture.Relay.Server.Http
 {
-	public interface IHttpResponseMessageBuilder
-	{
-		HttpResponseMessage BuildFrom(IOnPremiseTargetReponse onPremiseTargetReponse, Link link);
-	}
+    public interface IHttpResponseMessageBuilder
+    {
+        HttpResponseMessage BuildFrom(IOnPremiseTargetReponse onPremiseTargetReponse, Link link);
+    }
 }

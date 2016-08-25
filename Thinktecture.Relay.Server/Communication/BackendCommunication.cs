@@ -9,58 +9,58 @@ using Thinktecture.Relay.Server.OnPremise;
 
 namespace Thinktecture.Relay.Server.Communication
 {
-	internal abstract class BackendCommunication : IBackendCommunication
-	{
-		private bool _disposed;
+    internal abstract class BackendCommunication : IBackendCommunication
+    {
+        private bool _disposed;
 
-		public string OriginId { get; private set; }
+        public string OriginId { get; private set; }
 
-		public abstract Task<IOnPremiseTargetReponse> GetResponseAsync(string requestId);
-		public abstract Task SendOnPremiseConnectorRequest(string onPremiseId, IOnPremiseConnectorRequest onPremiseConnectorRequest);
-		public abstract void RegisterOnPremise(RegistrationInformation registrationInformation);
-		public abstract void UnregisterOnPremise(string connectionId);
-		public abstract Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetReponse reponse);
-	    public abstract bool IsRegistered(string connectionId);
-	    public abstract List<string> GetConnections(string linkId);
-	    public abstract void HeartbeatReceived(string connectionId);
-	    public abstract void EnableConnectionFeatures(Features features, string connectionId);
+        public abstract Task<IOnPremiseTargetReponse> GetResponseAsync(string requestId);
+        public abstract Task SendOnPremiseConnectorRequest(string onPremiseId, IOnPremiseConnectorRequest onPremiseConnectorRequest);
+        public abstract void RegisterOnPremise(RegistrationInformation registrationInformation);
+        public abstract void UnregisterOnPremise(string connectionId);
+        public abstract Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetReponse reponse);
+        public abstract bool IsRegistered(string connectionId);
+        public abstract List<string> GetConnections(string linkId);
+        public abstract void HeartbeatReceived(string connectionId);
+        public abstract void EnableConnectionFeatures(Features features, string connectionId);
 
 
-	    protected BackendCommunication(ILogger logger)
-		{
+        protected BackendCommunication(ILogger logger)
+        {
             OriginId = Guid.NewGuid().ToString();
             logger.Trace("Creating backend communication with origin id {0}", OriginId);
-		}
+        }
 
-		protected void CheckDisposed()
-		{
-			if (_disposed)
-			{
-				throw new ObjectDisposedException(GetType().Name);
-			}
-		}
+        protected void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
 
-		#region IDisposable
+        #region IDisposable
 
-		~BackendCommunication()
-		{
-			Dispose(false);
-		}
+        ~BackendCommunication()
+        {
+            Dispose(false);
+        }
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				_disposed = true;
-			}
-		}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+            }
+        }
 
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-		#endregion
-	}
+        #endregion
+    }
 }

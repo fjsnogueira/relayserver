@@ -2,8 +2,8 @@
 
 namespace Thinktecture.Relay.Server.Helper
 {
-	public interface IPathSplitter
-	{
-		PathInformation Split(string path);
-	}
+    public interface IPathSplitter
+    {
+        PathInformation Split(string path);
+    }
 }

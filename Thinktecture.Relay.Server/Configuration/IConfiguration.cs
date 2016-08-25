@@ -3,10 +3,10 @@
 namespace Thinktecture.Relay.Server.Configuration
 {
     public interface IConfiguration
-	{
-		TimeSpan OnPremiseConnectorCallbackTimeout { get; }
-		string RabbitMqConnectionString { get; }
-		string TraceFileDirectory { get; }
+    {
+        TimeSpan OnPremiseConnectorCallbackTimeout { get; }
+        string RabbitMqConnectionString { get; }
+        string TraceFileDirectory { get; }
         int LinkPasswordLength { get; }
         int DisconnectTimeout { get; }
         int ConnectionTimeout { get; }
@@ -17,5 +17,5 @@ namespace Thinktecture.Relay.Server.Configuration
         string HostName { get; }
         int Port { get; }
         TimeSpan HeartbeatTimeout { get; }
-	}
+    }
 }

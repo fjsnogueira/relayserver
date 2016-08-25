@@ -13,6 +13,6 @@ namespace Thinktecture.Relay.Server.Repository
         bool Update(Guid id, string password);
         User Get(Guid id);
         bool Any();
-	    bool IsUserNameAvailable(string userName);
+        bool IsUserNameAvailable(string userName);
     }
 }

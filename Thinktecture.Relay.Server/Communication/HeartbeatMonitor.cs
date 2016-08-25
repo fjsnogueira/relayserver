@@ -20,7 +20,8 @@ namespace Thinktecture.Relay.Server.Communication
             _logger = logger;
         }
 
-        public void Initialize(ConcurrentDictionary<string, ConnectionInformation> connectionInformation, TimeSpan heatbeatTimeout, string originId)
+        public void Initialize(ConcurrentDictionary<string, ConnectionInformation> connectionInformation, TimeSpan heatbeatTimeout,
+            string originId)
         {
             ConnectionInformation = connectionInformation;
             HeartbeatTimeout = heatbeatTimeout;
@@ -58,7 +59,7 @@ namespace Thinktecture.Relay.Server.Communication
                         SendHeartbeat(connection.Key, connection.Value);
                     }
                 }
-                
+
                 Thread.Sleep(HeartbeatTimeout);
             }
         }

@@ -11,7 +11,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
         private readonly ILogger _logger;
         private readonly IHeartbeatMonitor _heartbeatMonitor;
 
-        public RelayServerConnectionFactory(IOnPremiseTargetConnectorFactory onPremiseTargetConnectorFactory, ILogger logger, IHeartbeatMonitor heartbeatMonitor)
+        public RelayServerConnectionFactory(IOnPremiseTargetConnectorFactory onPremiseTargetConnectorFactory, ILogger logger,
+            IHeartbeatMonitor heartbeatMonitor)
         {
             _onPremiseTargetConnectorFactory = onPremiseTargetConnectorFactory;
             _logger = logger;
@@ -20,7 +21,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
 
         public IRelayServerConnection Create(string userName, string password, Uri relayServer, int requestTimeout, int maxRetries)
         {
-            return new RelayServerConnection(userName, password, relayServer, requestTimeout, maxRetries, _onPremiseTargetConnectorFactory, _logger, _heartbeatMonitor);
+            return new RelayServerConnection(userName, password, relayServer, requestTimeout, maxRetries, _onPremiseTargetConnectorFactory,
+                _logger, _heartbeatMonitor);
         }
     }
 }

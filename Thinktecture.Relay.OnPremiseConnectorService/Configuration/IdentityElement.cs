@@ -3,30 +3,32 @@ using System.Configuration;
 
 namespace Thinktecture.Relay.OnPremiseConnectorService.Configuration
 {
-	public class IdentityElement : ConfigurationElement
-	{
-		private static readonly ConfigurationProperty _userName = new ConfigurationProperty("userName", typeof(string), null, ConfigurationPropertyOptions.IsRequired);
-		private static readonly ConfigurationProperty _password = new ConfigurationProperty("password", typeof(string), String.Empty);
+    public class IdentityElement : ConfigurationElement
+    {
+        private static readonly ConfigurationProperty _userName = new ConfigurationProperty("userName", typeof(string), null,
+            ConfigurationPropertyOptions.IsRequired);
 
-		private static readonly ConfigurationPropertyCollection _properties = new ConfigurationPropertyCollection()
-		{
-			_userName,
-			_password
-		};
+        private static readonly ConfigurationProperty _password = new ConfigurationProperty("password", typeof(string), String.Empty);
 
-		protected override ConfigurationPropertyCollection Properties
-		{
-			get { return _properties; }
-		}
+        private static readonly ConfigurationPropertyCollection _properties = new ConfigurationPropertyCollection()
+        {
+            _userName,
+            _password
+        };
 
-		public string UserName
-		{
-			get { return (string) this[_userName]; }
-		}
+        protected override ConfigurationPropertyCollection Properties
+        {
+            get { return _properties; }
+        }
 
-		public string Password
-		{
-			get { return (string) this[_password]; }
-		}
-	}
+        public string UserName
+        {
+            get { return (string) this[_userName]; }
+        }
+
+        public string Password
+        {
+            get { return (string) this[_password]; }
+        }
+    }
 }

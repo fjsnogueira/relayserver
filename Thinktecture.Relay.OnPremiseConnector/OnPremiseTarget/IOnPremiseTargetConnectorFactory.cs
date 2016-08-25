@@ -2,8 +2,8 @@
 
 namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 {
-	internal interface IOnPremiseTargetConnectorFactory
-	{
-		IOnPremiseTargetConnector Create(Uri baseUri, int requestTimeout);
-	}
+    internal interface IOnPremiseTargetConnectorFactory
+    {
+        IOnPremiseTargetConnector Create(Uri baseUri, int requestTimeout);
+    }
 }

@@ -15,7 +15,7 @@ namespace Thinktecture.Relay.Server.Repository.DbModels
         public Guid Id { get; set; }
 
         [Required]
-		[MaxLength(250)]
+        [MaxLength(250)]
         [Index("UserNameIndex", IsUnique = true)]
         public string UserName { get; set; }
 

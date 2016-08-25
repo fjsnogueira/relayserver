@@ -1,9 +1,9 @@
 ﻿namespace Thinktecture.Relay.OnPremiseConnectorService.Configuration
 {
-	public enum AuthenticationType
-	{
-		None = 0,
+    public enum AuthenticationType
+    {
+        None = 0,
 
-		Identity = 1,
-	}
+        Identity = 1,
+    }
 }

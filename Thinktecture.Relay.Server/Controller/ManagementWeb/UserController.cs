@@ -95,16 +95,16 @@ namespace Thinktecture.Relay.Server.Controller.ManagementWeb
             return result ? (IHttpActionResult) Ok() : BadRequest();
         }
 
-		[HttpGet]
-		[ActionName("userNameAvailability")]
-		public IHttpActionResult GetUserNameAvailability(string userName)
-		{
-			if (_userRepository.IsUserNameAvailable(userName))
-			{
-				return Ok();
-			}
+        [HttpGet]
+        [ActionName("userNameAvailability")]
+        public IHttpActionResult GetUserNameAvailability(string userName)
+        {
+            if (_userRepository.IsUserNameAvailable(userName))
+            {
+                return Ok();
+            }
 
-			return Conflict();
-		}
+            return Conflict();
+        }
     }
 }

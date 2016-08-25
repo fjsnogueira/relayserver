@@ -43,7 +43,7 @@ namespace Thinktecture.Relay.Server
             app.UseAutofacMiddleware(container);
 
             app.UseCors(CorsOptions.AllowAll);
-            
+
             UseOAuthSecurity(app, container);
 
             MapSignalR(app, container);
@@ -75,18 +75,18 @@ namespace Thinktecture.Relay.Server
             builder.RegisterType<LinkRepository>().As<ILinkRepository>().SingleInstance();
             builder.RegisterType<UserRepository>().As<IUserRepository>().SingleInstance();
             builder.RegisterType<LogRepository>().As<ILogRepository>().SingleInstance();
-			builder.RegisterType<TraceRepository>().As<ITraceRepository>().SingleInstance();
+            builder.RegisterType<TraceRepository>().As<ITraceRepository>().SingleInstance();
 
-	        builder.RegisterType<RequestLogger>().As<IRequestLogger>().SingleInstance();
-	        builder.RegisterType<TraceManager>().As<ITraceManager>().SingleInstance();
-	        builder.RegisterType<TraceFileWriter>().As<ITraceFileWriter>().SingleInstance();
+            builder.RegisterType<RequestLogger>().As<IRequestLogger>().SingleInstance();
+            builder.RegisterType<TraceManager>().As<ITraceManager>().SingleInstance();
+            builder.RegisterType<TraceFileWriter>().As<ITraceFileWriter>().SingleInstance();
             builder.RegisterType<TraceFileReader>().As<ITraceFileReader>().SingleInstance();
             builder.RegisterType<TraceTransformation>().As<ITraceTransformation>().SingleInstance();
 
-	        builder.RegisterType<HttpResponseMessageBuilder>().As<IHttpResponseMessageBuilder>();
-	        builder.RegisterType<OnPremiseRequestBuilder>().As<IOnPremiseRequestBuilder>();
-	        builder.RegisterType<PathSplitter>().As<IPathSplitter>();
-           
+            builder.RegisterType<HttpResponseMessageBuilder>().As<IHttpResponseMessageBuilder>();
+            builder.RegisterType<OnPremiseRequestBuilder>().As<IOnPremiseRequestBuilder>();
+            builder.RegisterType<PathSplitter>().As<IPathSplitter>();
+
             builder.Register(context => new LoggerAdapter(LogManager.GetLogger("Server"))).As<ILogger>().SingleInstance();
 
             var container = builder.Build();
@@ -167,19 +167,21 @@ namespace Thinktecture.Relay.Server
             httpConfig.SuppressDefaultHostAuthentication();
             httpConfig.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
 
-            if (configuration.EnableRelaying) {  
+            if (configuration.EnableRelaying)
+            {
                 logger.Info("Relaying enabled");
-                httpConfig.Routes.MapHttpRoute("ClientRequest", "relay/{*path}", new { controller = "Client", action = "Relay" });
+                httpConfig.Routes.MapHttpRoute("ClientRequest", "relay/{*path}", new {controller = "Client", action = "Relay"});
             }
 
             if (configuration.EnableOnPremiseConnections)
             {
                 logger.Info("OnPremise Connections enabled ");
-                httpConfig.Routes.MapHttpRoute("OnPremiseTargetResponse", "forward", new { controller = "Response", action = "Forward" });
-                httpConfig.Routes.MapHttpRoute("OnPremiseTargetRequest", "request/{requestId}", new { controller = "Request", action = "Get" });
+                httpConfig.Routes.MapHttpRoute("OnPremiseTargetResponse", "forward", new {controller = "Response", action = "Forward"});
+                httpConfig.Routes.MapHttpRoute("OnPremiseTargetRequest", "request/{requestId}", new {controller = "Request", action = "Get"});
             }
 
-            if (configuration.EnableManagementWeb) {
+            if (configuration.EnableManagementWeb)
+            {
                 logger.Info("Management Web enabled");
                 httpConfig.Routes.MapHttpRoute("ManagementWeb", "api/managementweb/{controller}/{action}");
             }
@@ -193,7 +195,8 @@ namespace Thinktecture.Relay.Server
         {
             var configuration = container.Resolve<IConfiguration>();
 
-            if (!configuration.EnableManagementWeb) { 
+            if (!configuration.EnableManagementWeb)
+            {
                 return;
             }
 

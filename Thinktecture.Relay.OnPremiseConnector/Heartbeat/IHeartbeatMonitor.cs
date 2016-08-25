@@ -5,7 +5,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.Heartbeat
     public delegate void SendHeartbeatRequest();
 
     public delegate void ConnectionTimedOut();
-   
+
     public interface IHeartbeatMonitor
     {
         TimeSpan Timeout { get; set; }

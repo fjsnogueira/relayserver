@@ -28,8 +28,8 @@ namespace Thinktecture.Relay.Server.Repository.DbModels
         [Required]
         public string Salt { get; set; }
 
-		[Required]
-		[MaxLength(250)]
+        [Required]
+        [MaxLength(250)]
         public string SymbolicName { get; set; }
 
         [Required]

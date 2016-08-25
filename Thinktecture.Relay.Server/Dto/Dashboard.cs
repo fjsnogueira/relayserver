@@ -6,6 +6,6 @@ namespace Thinktecture.Relay.Server.Dto
     public class Dashboard
     {
         public IEnumerable<RequestLogEntry> Logs { get; set; }
-        public IEnumerable<ContentBytesChartDataItem> ContentBytesChartDataItems { get; set; } 
+        public IEnumerable<ContentBytesChartDataItem> ContentBytesChartDataItems { get; set; }
     }
 }

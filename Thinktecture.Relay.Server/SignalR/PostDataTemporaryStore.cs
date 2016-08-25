@@ -81,7 +81,7 @@ namespace Thinktecture.Relay.Server.SignalR
             _logger.Debug("Loading body for request '" + requestId + "'");
 
             Entry entry;
-            return _data.TryRemove(requestId, out entry) ? entry.Data : new byte[] { };
+            return _data.TryRemove(requestId, out entry) ? entry.Data : new byte[] {};
         }
 
         public void Close()

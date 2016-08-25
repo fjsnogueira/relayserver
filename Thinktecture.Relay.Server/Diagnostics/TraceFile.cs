@@ -20,10 +20,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
         public IDictionary<string, string> Headers
         {
             get { return _caseInsensitiveHeaders; }
-            set
-            {
-                _caseInsensitiveHeaders = new Dictionary<string, string>(value, StringComparer.OrdinalIgnoreCase);
-            }
+            set { _caseInsensitiveHeaders = new Dictionary<string, string>(value, StringComparer.OrdinalIgnoreCase); }
         }
 
         public byte[] Content { get; set; }

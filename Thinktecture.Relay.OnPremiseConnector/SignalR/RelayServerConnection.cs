@@ -42,7 +42,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
         private const int MIN_WAIT_TIME_IN_SECONDS = 2 * 1000;
         private const int MAX_WAIT_TIME_IN_SECONDS = 30 * 1000;
 
-        public RelayServerConnection(string userName, string password, Uri relayServer, int requestTimeout, int maxRetries, IOnPremiseTargetConnectorFactory onPremiseTargetConnectorFactory, ILogger logger, IHeartbeatMonitor heartbeatMonitor)
+        public RelayServerConnection(string userName, string password, Uri relayServer, int requestTimeout, int maxRetries,
+            IOnPremiseTargetConnectorFactory onPremiseTargetConnectorFactory, ILogger logger, IHeartbeatMonitor heartbeatMonitor)
             : base(new Uri(relayServer, "/signalr").AbsoluteUri)
         {
             _id = Interlocked.Increment(ref _nextId);
@@ -55,7 +56,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
             _logger = logger;
             _heartbeatMonitor = heartbeatMonitor;
             _connectors = new ConcurrentDictionary<string, IOnPremiseTargetConnector>(StringComparer.OrdinalIgnoreCase);
-            _httpClient = new HttpClient() { Timeout = TimeSpan.FromSeconds(requestTimeout) };
+            _httpClient = new HttpClient() {Timeout = TimeSpan.FromSeconds(requestTimeout)};
 
             heartbeatMonitor.SendHeartbeatRequest += HeartbeatMonitorOnSendHeartbeatRequest;
             heartbeatMonitor.ConnectionTimedOut += HeartbeatMonitorOnConnectionTimedOut;
@@ -118,7 +119,9 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
                 catch (Exception ex)
                 {
                     var randomWaitTime = GetRandomWaitTime();
-                    _logger.Trace(String.Format("Could not connect and authenticate to relay server - re-trying in {0} milliseconds. #{1}", randomWaitTime, _id), ex);
+                    _logger.Trace(
+                        String.Format("Could not connect and authenticate to relay server - re-trying in {0} milliseconds. #{1}",
+                            randomWaitTime, _id), ex);
                     Thread.Sleep(randomWaitTime);
                 }
             }
@@ -202,7 +205,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
         {
             if (token.IsHttpError)
             {
-                _logger.Trace("Could not authenticate with relay server: status-code={0}, reason={1}", token.HttpErrorStatusCode, token.HttpErrorReason);
+                _logger.Trace("Could not authenticate with relay server: status-code={0}, reason={1}", token.HttpErrorStatusCode,
+                    token.HttpErrorReason);
                 _logger.Warn("Could not authenticate with relay server.");
                 throw new Exception("Could not authenticate with relay server: " + token.HttpErrorReason);
             }
@@ -335,7 +339,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
             return _connectors.Keys.ToList();
         }
 
-        private async Task RequestOnPremiseTargetAsync(KeyValuePair<string, IOnPremiseTargetConnector> connector, OnPremiseTargetRequest onPremiseTargetRequest)
+        private async Task RequestOnPremiseTargetAsync(KeyValuePair<string, IOnPremiseTargetConnector> connector,
+            OnPremiseTargetRequest onPremiseTargetRequest)
         {
             _logger.Debug("Requesting local server {0} for request {1}", connector.Value.BaseUri, onPremiseTargetRequest.RequestId);
 
@@ -343,10 +348,13 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
 
             if (onPremiseTargetRequest.Body != null && onPremiseTargetRequest.Body.Length == 0)
             {
-                _logger.Trace("Requesting body from relay server. relay-server={0}, request-id={1}", _relayServer, onPremiseTargetRequest.RequestId);
+                _logger.Trace("Requesting body from relay server. relay-server={0}, request-id={1}", _relayServer,
+                    onPremiseTargetRequest.RequestId);
                 // request the body from the relay server (because SignalR cannot handle large messages)
                 var response =
-                    await ReplayHttpRequestIfNeededAsync(() => _httpClient.GetAsync(new Uri(_relayServer, "/request/" + onPremiseTargetRequest.RequestId)));
+                    await
+                        ReplayHttpRequestIfNeededAsync(
+                            () => _httpClient.GetAsync(new Uri(_relayServer, "/request/" + onPremiseTargetRequest.RequestId)));
                 onPremiseTargetRequest.Body = await response.Content.ReadAsByteArrayAsync();
             }
 
@@ -355,7 +363,8 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
             _logger.Debug("Sending reponse from {0} to relay", connector.Value.BaseUri);
 
             // transfer the result to the relay server (need POST here, because SignalR does not handle large messages)
-            Func<HttpContent> content = () => new StringContent(JsonConvert.SerializeObject(onPremiseTargetReponse), Encoding.UTF8, "application/json");
+            Func<HttpContent> content =
+                () => new StringContent(JsonConvert.SerializeObject(onPremiseTargetReponse), Encoding.UTF8, "application/json");
 
             var currentRetryCount = 0;
 

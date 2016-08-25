@@ -23,6 +23,6 @@ namespace Thinktecture.Relay.Server.Controller.ManagementWeb
             result.ContentBytesChartDataItems = _logRepository.GetContentBytesChartDataItems();
 
             return Ok(result);
-        } 
+        }
     }
 }

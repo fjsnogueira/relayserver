@@ -4,8 +4,8 @@ using Thinktecture.Relay.Server.OnPremise;
 
 namespace Thinktecture.Relay.Server.Http
 {
-	public interface IOnPremiseRequestBuilder
-	{
-		Task<IOnPremiseConnectorRequest> BuildFrom(HttpRequestMessage request, string originId, string pathWithoutUserName);
-	}
+    public interface IOnPremiseRequestBuilder
+    {
+        Task<IOnPremiseConnectorRequest> BuildFrom(HttpRequestMessage request, string originId, string pathWithoutUserName);
+    }
 }
