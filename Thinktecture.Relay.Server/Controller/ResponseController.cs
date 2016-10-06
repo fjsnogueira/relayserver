@@ -25,7 +25,7 @@ namespace Thinktecture.Relay.Server.Controller
         {
             _logger.Trace("Forwarding {0}", message.ToString());
 
-            var onPremiseTargetReponse = message.ToObject<OnPremiseTargetReponse>();
+            var onPremiseTargetReponse = message.ToObject<OnPremiseTargetResponse>();
 
             await _backendCommunication.SendOnPremiseTargetResponse(onPremiseTargetReponse.OriginId, onPremiseTargetReponse);
 

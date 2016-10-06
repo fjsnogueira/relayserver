@@ -13,11 +13,11 @@ namespace Thinktecture.Relay.Server.Communication
 
 		public string OriginId { get; private set; }
 
-		public abstract Task<IOnPremiseTargetReponse> GetResponseAsync(string requestId);
+		public abstract Task<IOnPremiseTargetResponse> GetResponseAsync(string requestId);
 		public abstract Task SendOnPremiseConnectorRequest(string onPremiseId, IOnPremiseConnectorRequest onPremiseConnectorRequest);
 		public abstract void RegisterOnPremise(RegistrationInformation registrationInformation);
 		public abstract void UnregisterOnPremise(string connectionId);
-		public abstract Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetReponse reponse);
+		public abstract Task SendOnPremiseTargetResponse(string originId, IOnPremiseTargetResponse response);
 	    public abstract bool IsRegistered(string connectionId);
 	    public abstract List<string> GetConnections(string linkId);
 

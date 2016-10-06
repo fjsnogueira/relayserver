@@ -38,7 +38,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 			return _traceRepository.GetCurrentTraceConfigurationId(linkId);
 		}
 
-		public void Trace(IOnPremiseConnectorRequest onPremiseConnectorRequest, IOnPremiseTargetReponse onPremiseTargetReponse, Guid traceConfigurationId)
+		public void Trace(IOnPremiseConnectorRequest onPremiseConnectorRequest, IOnPremiseTargetResponse onPremiseTargetResponse, Guid traceConfigurationId)
 		{
 			try
 			{
@@ -52,8 +52,8 @@ namespace Thinktecture.Relay.Server.Diagnostics
 				_traceFileWriter.WriteHeaderFile(filenamePrefix + OnPremiseConnectorHeaderExtension, onPremiseConnectorRequest.HttpHeaders);
 				_traceFileWriter.WriteContentFile(filenamePrefix + OnPremiseConnectorContentExtension, onPremiseConnectorRequest.Body);
 
-				_traceFileWriter.WriteHeaderFile(filenamePrefix + OnPremiseTargetHeaderExtension, onPremiseTargetReponse.HttpHeaders);
-				_traceFileWriter.WriteContentFile(filenamePrefix + OnPremiseTargetContentExtension, onPremiseTargetReponse.Body);
+				_traceFileWriter.WriteHeaderFile(filenamePrefix + OnPremiseTargetHeaderExtension, onPremiseTargetResponse.HttpHeaders);
+				_traceFileWriter.WriteContentFile(filenamePrefix + OnPremiseTargetContentExtension, onPremiseTargetResponse.Body);
 			}
 			catch (Exception ex)
 			{

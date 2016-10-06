@@ -7,7 +7,7 @@ namespace Thinktecture.Relay.Server.Communication
 	{
 		public string RequestId { get; private set; }
 		public ManualResetEvent Handle { get; private set; }
-		public IOnPremiseTargetReponse Reponse { set; get; }
+		public IOnPremiseTargetResponse Response { set; get; }
 
 		public OnPremiseConnectorCallback(string requestId)
 		{

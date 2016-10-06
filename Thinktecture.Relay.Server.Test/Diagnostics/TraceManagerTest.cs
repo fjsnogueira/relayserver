@@ -21,7 +21,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 	[TestClass]
 	public class TraceManagerTest
 	{
-		private class OnPremiseTargetReponse : IOnPremiseTargetReponse
+		private class OnPremiseTargetResponse : IOnPremiseTargetResponse
 		{
 			public string RequestId { get; set; }
 			public string OriginId { get; set; }
@@ -99,7 +99,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 				},
 				Body = new byte[] { 65, 66, 67 }
 			};
-			var onPremiseTargetResponse = new OnPremiseTargetReponse()
+			var onPremiseTargetResponse = new OnPremiseTargetResponse()
 			{
 				HttpHeaders = new Dictionary<string, string>
 				{
@@ -141,7 +141,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 				},
 				Body = new byte[] { 65, 66, 67 }
 			};
-			var onPremiseTargetResponse = new OnPremiseTargetReponse()
+			var onPremiseTargetResponse = new OnPremiseTargetResponse()
 			{
 				HttpHeaders = new Dictionary<string, string>
 				{
@@ -192,7 +192,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 				},
 				Body = new byte[] { 65, 66, 67 }
 			};
-			var onPremiseTargetResponse = new OnPremiseTargetReponse()
+			var onPremiseTargetResponse = new OnPremiseTargetResponse()
 			{
 				HttpHeaders = new Dictionary<string, string>
 				{
