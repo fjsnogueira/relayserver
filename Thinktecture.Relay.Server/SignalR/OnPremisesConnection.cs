@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
@@ -38,7 +37,7 @@ namespace Thinktecture.Relay.Server.SignalR
         {
             string onPremiseId = GetOnPremiseIdFromRequest(request);
 
-            _logger.Debug("OnPremise {0} connected", onPremiseId);
+            _logger.Debug("On-premise {0} connected", onPremiseId);
 
             RegisterOnPremise(request, connectionId, onPremiseId);
 
@@ -47,8 +46,8 @@ namespace Thinktecture.Relay.Server.SignalR
 
         private async Task ForwardClientRequest(string connectionId, IOnPremiseConnectorRequest onPremiseConnectorRequest)
         {
-            _logger.Debug("Forwarding client request to connection '{0}'", connectionId);
-            _logger.Trace("Forwarding client request to connection '{0}'. request-id={1}, http-method={2}, url={3}, origin-id={4}, body-length={5}",
+            _logger.Debug("Forwarding client request to connection {0}", connectionId);
+            _logger.Trace("Forwarding client request to connection. connection-id={0}, request-id={1}, http-method={2}, url={3}, origin-id={4}, body-length={5}",
                 connectionId, onPremiseConnectorRequest.RequestId, onPremiseConnectorRequest.HttpMethod, onPremiseConnectorRequest.Url, onPremiseConnectorRequest.OriginId, onPremiseConnectorRequest.Body != null ? onPremiseConnectorRequest.Body.Length : 0);
 
             var onPremiseTargetRequest = new OnPremiseTargetRequest()
@@ -80,7 +79,7 @@ namespace Thinktecture.Relay.Server.SignalR
         {
             var onPremiseId = GetOnPremiseIdFromRequest(request);
 
-            _logger.Debug("OnPremise {0} reconnected.", onPremiseId);
+            _logger.Debug("On-premise {0} reconnected", onPremiseId);
 
             RegisterOnPremise(request, connectionId, onPremiseId);
 
@@ -106,7 +105,7 @@ namespace Thinktecture.Relay.Server.SignalR
 
         protected override Task OnDisconnected(IRequest request, string connectionId, bool stopCalled)
         {
-            _logger.Debug("OnPremise {0} disconnected - V2.", connectionId);
+            _logger.Debug("On-premise {0} disconnected", connectionId);
             _backendCommunication.UnregisterOnPremise(connectionId);
 
             return base.OnDisconnected(request, connectionId, stopCalled);

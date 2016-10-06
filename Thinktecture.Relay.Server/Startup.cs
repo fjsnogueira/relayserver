@@ -4,14 +4,12 @@ using System.IO;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using Autofac;
-using Autofac.Builder;
 using Autofac.Integration.SignalR;
 using Autofac.Integration.WebApi;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.Host.HttpListener;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.StaticFiles;
 using Newtonsoft.Json.Serialization;
@@ -193,13 +191,13 @@ namespace Thinktecture.Relay.Server
 
             if (configuration.EnableOnPremiseConnections)
             {
-                logger.Info("OnPremise Connections enabled ");
+                logger.Info("On-premise connections enabled");
                 httpConfig.Routes.MapHttpRoute("OnPremiseTargetResponse", "forward", new { controller = "Response", action = "Forward" });
                 httpConfig.Routes.MapHttpRoute("OnPremiseTargetRequest", "request/{requestId}", new { controller = "Request", action = "Get" });
             }
 
             if (configuration.EnableManagementWeb) {
-                logger.Info("Management Web enabled");
+                logger.Info("Management web enabled");
                 httpConfig.Routes.MapHttpRoute("ManagementWeb", "api/managementweb/{controller}/{action}");
             }
 

@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Results;
 using NLog.Interface;
 using Thinktecture.Relay.Server.Communication;
 using Thinktecture.Relay.Server.Diagnostics;
@@ -61,19 +60,19 @@ namespace Thinktecture.Relay.Server.Controller
 
             if (link == null)
             {
-                _logger.Info("Link for requested path {0} not found", path);
+                _logger.Info("Link not found. Path: {0}", path);
                 return NotFound();
             }
 
             if (link.IsDisabled)
             {
-                _logger.Info("{0}: Link {1} is disabled", link.Id, link.SymbolicName);
+                _logger.Info("{0}: Link {1} is disabled.", link.Id, link.SymbolicName);
                 return NotFound();
             }
 
             if (String.IsNullOrWhiteSpace(pathInformation.PathWithoutUserName))
             {
-                _logger.Info("{0}: Path without username is not found. Wrong path information: {1}", link.Id, path);
+                _logger.Info("{0}: Path without user name is not found. Path: {1}", link.Id, path);
                 return NotFound();
             }
 
@@ -91,16 +90,16 @@ namespace Thinktecture.Relay.Server.Controller
             _logger.Trace("{0}: Sending on premise connector request.", link.Id);
             await _backendCommunication.SendOnPremiseConnectorRequest(link.Id.ToString(), onPremiseConnectorRequest);
 
-            _logger.Trace("{0}: Waiting for response. Request Id", onPremiseConnectorRequest.RequestId);
+            _logger.Trace("{0}: Waiting for response.", onPremiseConnectorRequest.RequestId);
             var onPremiseTargetReponse = await _backendCommunication.GetResponseAsync(onPremiseConnectorRequest.RequestId);
 
             if (onPremiseTargetReponse != null)
             {
-                _logger.Trace("{0}: Response received from {1}", link.Id, onPremiseTargetReponse.RequestId);
+                _logger.Trace("{0}: Response received. From: {1}", link.Id, onPremiseTargetReponse.RequestId);
             }
             else
             {
-                _logger.Trace("{0}: On Premise Timeout", link.Id);     
+                _logger.Trace("{0}: On-Premise timeout.", link.Id);     
             }
 
             var response = _httpResponseMessageBuilder.BuildFrom(onPremiseTargetReponse, link);

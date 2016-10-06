@@ -59,7 +59,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
         {
             CheckDisposed();
 
-            _logger.Debug("Waiting for response for request '{0}'", requestId);
+            _logger.Debug("Waiting for response for request id {0}", requestId);
 
             var onPremiseConnectorCallback = _onPremiseConnectorCallbackFactory.Create(requestId);
             _callbacks[requestId] = onPremiseConnectorCallback;
@@ -73,8 +73,8 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             var onPremiseConnectorCallback = (IOnPremiseConnectorCallback) state;
             if (onPremiseConnectorCallback.Handle.WaitOne(_configuration.OnPremiseConnectorCallbackTimeout))
             {
-                _logger.Debug("On-Premise Target response for request '{0}'", onPremiseConnectorCallback.RequestId);
-                return onPremiseConnectorCallback.Reponse;
+                _logger.Debug("On-Premise target response for request id {0}", onPremiseConnectorCallback.RequestId);
+                return onPremiseConnectorCallback.Response;
             }
 
             _callbacks.TryRemove(onPremiseConnectorCallback.RequestId, out onPremiseConnectorCallback);
@@ -85,7 +85,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
         {
             CheckDisposed();
 
-            _logger.Debug("Sending client request for On-Premise Connector '{0}'", onPremiseId);
+            _logger.Debug("Sending client request for on-premise connector {0}", onPremiseId);
 
             var queue = DeclareOnPremiseQueue(onPremiseId);
             await _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false, new Message<string>(JsonConvert.SerializeObject(onPremiseConnectorRequest)));
@@ -97,7 +97,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
 
             UnregisterOnPremise(registrationInformation.ConnectionId);
 
-            _logger.Debug("Registering OnPremise '{0}' via connection '{1}'", registrationInformation.OnPremiseId, registrationInformation.ConnectionId);
+            _logger.Debug("Registering on-premise {0} via connection {1}", registrationInformation.OnPremiseId, registrationInformation.ConnectionId);
 
             var queue = DeclareOnPremiseQueue(registrationInformation.OnPremiseId);
 
@@ -121,19 +121,16 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             {
                 IQueue queue;
                 _declaredQueues.TryRemove("OnPremises " + onPremiseInformation.LinkId, out queue);
+                _logger.Debug("Unregistered on-premise connection id {0}", connectionId);
             }
 
-            string onPremiseId = onPremiseInformation == null ? "unknown" : onPremiseInformation.LinkId;
+            var onPremiseId = onPremiseInformation == null ? "unknown" : onPremiseInformation.LinkId;
             
             IDisposable consumer;
             if (_onPremiseConsumers.TryRemove(connectionId, out consumer))
             {
-                _logger.Debug("Unregistering OnPremise '{0} via connection '{0}'", onPremiseId, connectionId);
+                _logger.Debug("Unregistered on-premise consumer {0} for connection id {1}", onPremiseId, connectionId);
                 consumer.Dispose();
-            }
-            else
-            {
-                _logger.Debug("Unregistering OnPremise '{0} via connection '{0}' without consumer", onPremiseId, connectionId);
             }
         }
 
@@ -141,7 +138,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
         {
             CheckDisposed();
 
-            _logger.Debug("Sending On-Premise Target response to origin '{0}'", originId);
+            _logger.Debug("Sending on-premise target response to origin id {0}", originId);
 
             var queue = DeclareRelayServerQueue(originId);
             await _bus.Advanced.PublishAsync(Exchange.GetDefault(), queue.Name, false, false, new Message<string>(JsonConvert.SerializeObject(response)));
@@ -159,7 +156,7 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
 
         private void StartReceivingOnPremiseTargetResponses(string originId)
         {
-            _logger.Debug("Start receiving On-Premise Target responses for origin '{0}'", originId);
+            _logger.Debug("Start receiving on-premise target responses for origin id {0}", originId);
 
             var queue = DeclareRelayServerQueue(originId);
             _bus.Advanced.Consume(queue, (Action<IMessage<string>, MessageReceivedInfo>) ((message, info) => ForwardOnPremiseTargetResponse(JsonConvert.DeserializeObject<OnPremiseTargetResponse>(message.Body))));
@@ -183,13 +180,13 @@ namespace Thinktecture.Relay.Server.Communication.RabbitMq
             }
             else
             {
-                _logger.Debug("No callback found for request '{0}'", reponse.RequestId);
+                _logger.Debug("No callback found for request id {0}", response.RequestId);
             }
         }
 
         private IQueue DeclareQueue(string queueName)
         {
-            _logger.Debug("Creating queue '{0}'", queueName);
+            _logger.Debug("Creating queue {0}", queueName);
 
             var queue = _bus.Advanced.QueueDeclare(queueName, expires: _expiration);
             return queue;

@@ -11,7 +11,7 @@ namespace Thinktecture.Relay.Server.Helper
 		{
 			if (path == null)
 			{
-				throw new ArgumentNullException("path", "Path must not be null.");
+				throw new ArgumentNullException("path", "Path cannot be null");
 			}
 
 			var splitPath = SplitPath(path).ToList();
