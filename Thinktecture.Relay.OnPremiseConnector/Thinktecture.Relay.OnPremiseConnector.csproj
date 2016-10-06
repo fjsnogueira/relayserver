@@ -70,11 +70,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IOnPremiseInProcHandler.cs" />
     <Compile Include="OnPremiseTarget\IOnPremiseTargetConnector.cs" />
     <Compile Include="OnPremiseTarget\IOnPremiseTargetConnectorFactory.cs" />
     <Compile Include="OnPremiseTarget\IOnPremiseTargetRequest.cs" />
-    <Compile Include="OnPremiseTarget\OnPremiseTargetConnector.cs" />
     <Compile Include="OnPremiseTarget\IOnPremiseTargetResponse.cs" />
+    <Compile Include="OnPremiseTarget\OnPremiseInProcTargetConnector.cs" />
+    <Compile Include="OnPremiseTarget\OnPremiseWebTargetConnector.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseTargetConnectorFactory.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseTargetRequest.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseTargetResponse.cs" />

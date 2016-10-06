@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 {
-	internal interface IOnPremiseTargetConnector
-	{
-		Uri BaseUri { get; }
+    internal interface IOnPremiseTargetConnector
+    {
         Task<IOnPremiseTargetResponse> GetResponseAsync(string url, IOnPremiseTargetRequest request);
     }
 }

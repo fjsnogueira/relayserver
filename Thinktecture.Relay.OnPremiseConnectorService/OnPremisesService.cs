@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using System.Threading.Tasks;
 using NLog;
 using Thinktecture.Relay.OnPremiseConnector;
@@ -10,61 +9,78 @@ using Thinktecture.Relay.OnPremiseConnectorService.Configuration;
 
 namespace Thinktecture.Relay.OnPremiseConnectorService
 {
-	internal class OnPremisesService
-	{
-		private RelayServerConnector _connector;
-	    private Logger _logger = LogManager.GetCurrentClassLogger();
+    internal class OnPremisesService
+    {
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-		public async Task Start()
-		{
-		    try
-		    {
-		        var section = (RelayServerSection) ConfigurationManager.GetSection("relayServer");
+        private RelayServerConnector _connector;
 
-		        if (section.OnPremiseTargets.Count == 0)
-		            throw new ConfigurationErrorsException("At least one On-Premise Target needs to be configured.");
+        public async Task Start()
+        {
+            try
+            {
+                var section = (RelayServerSection) ConfigurationManager.GetSection("relayServer");
 
-		        switch (section.Security.AuthenticationType)
-		        {
-		            case AuthenticationType.Identity:
-		                if (String.IsNullOrEmpty(section.Security.Identity.UserName))
-		                    throw new ConfigurationErrorsException(
-		                        "The user name cannot be null or empty when using authentication type 'Identity'.");
+                if (section.OnPremiseTargets.Count == 0)
+                    throw new ConfigurationErrorsException("At least one on-premise target needs to be configured");
 
-		                _connector = new RelayServerConnector(section.Security.Identity.UserName,
-		                    section.Security.Identity.Password, new Uri(section.BaseUrl),
-		                    (int) section.RequestTimeout.TotalSeconds);
-		                break;
+                switch (section.Security.AuthenticationType)
+                {
+                    case AuthenticationType.Identity:
+                        if (String.IsNullOrEmpty(section.Security.Identity.UserName))
+                            throw new ConfigurationErrorsException("The user name cannot be null or empty when using authentication type 'Identity'");
 
-		            default:
-		                throw new ArgumentOutOfRangeException();
-		        }
+                        _connector = new RelayServerConnector(section.Security.Identity.UserName, section.Security.Identity.Password,
+                            new Uri(section.BaseUrl), (int) section.RequestTimeout.TotalSeconds);
+                        break;
 
-		        _connector.RelayedRequestHeader = "X-Relayed";
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
-		        foreach (var onPremiseTarget in section.OnPremiseTargets.Cast<OnPremiseTargetElement>())
-		        {
-		            _connector.RegisterOnPremiseTarget(onPremiseTarget.Key, new Uri(onPremiseTarget.BaseUrl));
-		        }
+                _connector.RelayedRequestHeader = "X-Relayed";
+
+                foreach (var onPremiseTarget in section.OnPremiseTargets.OfType<OnPremiseWebTargetElement>())
+                {
+                    _connector.RegisterOnPremiseTarget(onPremiseTarget.Key, new Uri(onPremiseTarget.BaseUrl));
+                }
+
+                foreach (var onPremiseTarget in section.OnPremiseTargets.OfType<OnPremiseInProcTargetElement>())
+                {
+                    Type handlerType;
+
+                    var parts = onPremiseTarget.TypeName.Split(',');
+                    if (parts.Length == 2)
+                    {
+                        var assembly = Assembly.Load(parts[1].Trim());
+                        handlerType = assembly.GetType(parts[0].Trim());
+                    }
+                    else
+                    {
+                        handlerType = Type.GetType(parts[0].Trim());
+                    }
+
+                    _connector.RegisterOnPremiseTarget(onPremiseTarget.Key, handlerType);
+                }
 
 
-		        await _connector.Connect();
-		    }
-		    catch (Exception e)
-		    {
-		        _logger.FatalException("Fatal exception occured", e);
-		        throw;
-		    }
-		}
+                await _connector.Connect();
+            }
+            catch (Exception e)
+            {
+                _logger.FatalException("Fatal exception occured", e);
+                throw;
+            }
+        }
 
-		public void Stop()
-		{
-			if (_connector != null)
-			{
-				_connector.Disconnect();
-				_connector.Dispose();
-				_connector = null;
-			}
-		}
-	}
+        public void Stop()
+        {
+            if (_connector != null)
+            {
+                _connector.Disconnect();
+                _connector.Dispose();
+                _connector = null;
+            }
+        }
+    }
 }

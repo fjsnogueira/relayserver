@@ -67,8 +67,10 @@
   <ItemGroup>
     <Compile Include="Configuration\AuthenticationType.cs" />
     <Compile Include="Configuration\IdentityElement.cs" />
+    <Compile Include="Configuration\OnPremiseInProcTargetElement.cs" />
     <Compile Include="Configuration\OnPremiseTargetCollection.cs" />
     <Compile Include="Configuration\OnPremiseTargetElement.cs" />
+    <Compile Include="Configuration\OnPremiseWebTargetElement.cs" />
     <Compile Include="Configuration\RelayServerSection.cs" />
     <Compile Include="Configuration\SecurityElement.cs" />
     <Compile Include="OnPremisesService.cs" />

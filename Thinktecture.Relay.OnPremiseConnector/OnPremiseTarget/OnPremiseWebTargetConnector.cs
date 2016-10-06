@@ -9,11 +9,11 @@ using NLog.Interface;
 
 namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 {
-    internal class OnPremiseTargetConnector : IOnPremiseTargetConnector
+    internal class OnPremiseWebTargetConnector : IOnPremiseTargetConnector
     {
         private static readonly Dictionary<string, Action<HttpWebRequest, string>> _requestHeaderTransformations;
 
-        static OnPremiseTargetConnector()
+        static OnPremiseWebTargetConnector()
         {
             _requestHeaderTransformations = new Dictionary<string, Action<HttpWebRequest, string>>()
             {
@@ -33,32 +33,30 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
             };
         }
 
+        private readonly Uri _baseUri;
         private readonly int _requestTimeout;
         private readonly ILogger _logger;
 
-        public Uri BaseUri { get; private set; }
-
-        public OnPremiseTargetConnector(Uri baseUri, int requestTimeout, ILogger logger)
+        public OnPremiseWebTargetConnector(Uri baseUri, int requestTimeout, ILogger logger)
         {
-            BaseUri = baseUri;
-
+            _baseUri = baseUri;
             _requestTimeout = requestTimeout;
             _logger = logger;
         }
 
-        public async Task<IOnPremiseTargetReponse> GetResponseAsync(string url, IOnPremiseTargetRequest onPremiseTargetRequest)
+        public async Task<IOnPremiseTargetResponse> GetResponseAsync(string url, IOnPremiseTargetRequest request)
         {
-            _logger.Debug("Requesting response from On-Premise Target...");
-            _logger.Trace("Requesting response from On-Premise Target. url={0}, request-id={1}, origin-id", url, onPremiseTargetRequest.RequestId, onPremiseTargetRequest.OriginId);
+            _logger.Debug("Requesting response from on-premise web target");
+            _logger.Trace("Requesting response from on-premise web target. request-id={0}, url={1}, origin-id={2}", request.RequestId, url, request.OriginId);
 
-            var onPremiseTargetReponse = new OnPremiseTargetReponse()
+            var response = new OnPremiseTargetResponse()
             {
-                RequestId = onPremiseTargetRequest.RequestId,
-                OriginId = onPremiseTargetRequest.OriginId,
+                RequestId = request.RequestId,
+                OriginId = request.OriginId,
                 RequestStarted = DateTime.UtcNow
             };
 
-            var webRequest = await CreateOnPremiseTargetWebRequestAsync(url, onPremiseTargetRequest);
+            var webRequest = await CreateOnPremiseTargetWebRequestAsync(url, request);
 
             HttpWebResponse webResponse = null;
             try
@@ -69,7 +67,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
                 }
                 catch (WebException wex)
                 {
-                    _logger.Trace("Error requesting response. request-id={0}", wex, onPremiseTargetRequest.RequestId);
+                    _logger.Trace("Error requesting response. request-id={0}", wex, request.RequestId);
 
                     if (wex.Status == WebExceptionStatus.ProtocolError)
                     {
@@ -80,36 +78,36 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
                 if (webResponse == null)
                 {
                     _logger.Warn("Gateway timeout!");
-                    _logger.Trace("Gateway timeout. request-id={0}", onPremiseTargetRequest.RequestId);
+                    _logger.Trace("Gateway timeout. request-id={0}", request.RequestId);
 
-                    onPremiseTargetReponse.StatusCode = HttpStatusCode.GatewayTimeout;
-                    onPremiseTargetReponse.HttpHeaders = new Dictionary<string, string>()
+                    response.StatusCode = HttpStatusCode.GatewayTimeout;
+                    response.HttpHeaders = new Dictionary<string, string>()
                     {
                         { "X-TTRELAY-TIMEOUT", "On-Premise Target" }
                     };
                 }
                 else
                 {
-                    onPremiseTargetReponse.StatusCode = webResponse.StatusCode;
+                    response.StatusCode = webResponse.StatusCode;
 
                     using (var stream = new MemoryStream())
                     {
-                        onPremiseTargetReponse.HttpHeaders = webResponse.Headers.AllKeys.ToDictionary(n => n, n => webResponse.Headers.Get(n), StringComparer.OrdinalIgnoreCase);
+                        response.HttpHeaders = webResponse.Headers.AllKeys.ToDictionary(n => n, n => webResponse.Headers.Get(n), StringComparer.OrdinalIgnoreCase);
 
                         using (var responseStream = webResponse.GetResponseStream() ?? Stream.Null)
                         {
                             await responseStream.CopyToAsync(stream);
                         }
 
-                        onPremiseTargetReponse.Body = stream.ToArray();
+                        response.Body = stream.ToArray();
                     }
                 }
 
-                onPremiseTargetReponse.RequestFinished = DateTime.UtcNow;
+                response.RequestFinished = DateTime.UtcNow;
 
-                _logger.Trace("Got response. status-code={0}, request-id={1}", onPremiseTargetReponse.StatusCode, onPremiseTargetReponse.RequestId);
+                _logger.Trace("Got response. request-id={0}, status-code={1}", response.RequestId, response.StatusCode);
 
-                return onPremiseTargetReponse;
+                return response;
             }
             finally
             {
@@ -124,13 +122,13 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
         {
             _logger.Trace("Creating web request");
 
-            var webRequest = WebRequest.CreateHttp(new Uri(BaseUri, url));
+            var webRequest = WebRequest.CreateHttp(new Uri(_baseUri, url));
             webRequest.Method = onPremiseTargetRequest.HttpMethod;
             webRequest.Timeout = _requestTimeout * 1000;
 
             foreach (var httpHeader in onPremiseTargetRequest.HttpHeaders)
             {
-                _logger.Trace("   adding header: header={0}, value={1}", httpHeader.Key, httpHeader.Value);
+                _logger.Trace("   adding header. header={0}, value={1}", httpHeader.Key, httpHeader.Value);
 
                 Action<HttpWebRequest, string> restrictedHeader;
                 if (_requestHeaderTransformations.TryGetValue(httpHeader.Key, out restrictedHeader))
@@ -148,7 +146,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 
             if (onPremiseTargetRequest.Body != null)
             {
-                _logger.Trace("   adding request body, length={0}", onPremiseTargetRequest.Body.Length);
+                _logger.Trace("   adding request body. length={0}", onPremiseTargetRequest.Body.Length);
 
                 var requestStream = await webRequest.GetRequestStreamAsync();
                 await requestStream.WriteAsync(onPremiseTargetRequest.Body, 0, onPremiseTargetRequest.Body.Length);

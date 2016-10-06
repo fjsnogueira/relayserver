@@ -14,7 +14,12 @@ namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 
         public IOnPremiseTargetConnector Create(Uri baseUri, int requestTimeout)
         {
-            return new OnPremiseTargetConnector(baseUri, requestTimeout, _logger);
+            return new OnPremiseWebTargetConnector(baseUri, requestTimeout, _logger);
+        }
+
+        public IOnPremiseTargetConnector Create(Type handlerType, int requestTimeout)
+        {
+            return new OnPremiseInProcTargetConnector(handlerType, requestTimeout, _logger);
         }
     }
 }
