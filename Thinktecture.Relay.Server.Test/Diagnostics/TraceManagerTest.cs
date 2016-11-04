@@ -206,7 +206,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 			var exception = new Exception();
 
 			traceFileWriterMock.Setup(t => t.WriteContentFile(It.IsAny<string>(), clientRequest.Body)).Throws(exception);
-			loggerMock.Setup(l => l.Warn(It.IsAny<string>(), exception));
+			loggerMock.Setup(l => l.Warn(exception, It.IsAny<string>()));
 
 			sut.Trace(clientRequest, onPremiseTargetResponse, traceConfigurationId);
 
@@ -279,7 +279,7 @@ namespace Thinktecture.Relay.Server.Diagnostics
 		    await traceFileWriter.WriteHeaderFile("tracefiles/" + filePrefix2 + ".crxxxxxxx.headers", clientHeaders);
 		    await traceFileWriter.WriteHeaderFile("tracefiles/" + filePrefix2 + ".ltrxxxxxxx.headers", onPremiseTargetHeaders);
             
-		    loggerMock.Setup(l => l.Warn(It.IsAny<string>(), It.IsAny<Exception>()));
+		    loggerMock.Setup(l => l.Warn(It.IsAny<Exception>(), It.IsAny<string>(), It.IsAny<object[]>()));
 
 			result = await sut.GetTracesAsync(Guid.Parse("7975999f-54d9-4b21-a093-4502ea372723"));
 

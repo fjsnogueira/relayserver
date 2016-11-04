@@ -72,9 +72,9 @@ namespace Thinktecture.Relay.OnPremiseConnectorService
 
 				await _connector.Connect();
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				_logger.FatalException("Fatal exception occured", e);
+				_logger.Fatal(ex, "Fatal exception occured");
 				throw;
 			}
 		}
