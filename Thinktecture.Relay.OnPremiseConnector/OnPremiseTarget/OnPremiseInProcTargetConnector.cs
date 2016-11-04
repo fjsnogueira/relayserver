@@ -1,99 +1,51 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using NLog.Interface;
 
 namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 {
-    internal class OnPremiseInProcTargetConnector : IOnPremiseTargetConnector
-    {
-        private readonly Type _handlerType;
-        private readonly int _requestTimeout;
-        private readonly ILogger _logger;
+	internal class OnPremiseInProcTargetConnector : OnPremiseInProcTargetConnectorBase
+	{
+		private readonly Func<IOnPremiseInProcHandler> _handlerFactory;
 
-        public OnPremiseInProcTargetConnector(Type handlerType, int requestTimeout, ILogger logger)
-        {
-            _handlerType = handlerType;
-            _requestTimeout = requestTimeout;
-            _logger = logger;
-        }
+		public OnPremiseInProcTargetConnector(ILogger logger, int requestTimeout, Type handlerType)
+			: this(logger, requestTimeout, CreateFactory(handlerType))
+		{
+		}
 
-        public async Task<IOnPremiseTargetResponse> GetResponseAsync(string url, IOnPremiseTargetRequest request)
-        {
-            _logger.Debug("Requesting response from on-premise in-proc target");
-            _logger.Trace("Requesting response from on-premise in-proc target. request-id={0}, url={1}, origin-id={2}", request.RequestId, url, request.OriginId);
+		public OnPremiseInProcTargetConnector(ILogger logger, int requestTimeout, Func<IOnPremiseInProcHandler> handlerFactory)
+			: base(logger, requestTimeout)
+		{
+			if (handlerFactory == null)
+				throw new ArgumentNullException(nameof(handlerFactory));
 
-            var response = new OnPremiseTargetResponse()
-            {
-                RequestId = request.RequestId,
-                OriginId = request.OriginId,
-                RequestStarted = DateTime.UtcNow
-            };
+			_handlerFactory = handlerFactory;
+		}
 
-            try
-            {
-                var handler = (IOnPremiseInProcHandler) Activator.CreateInstance(_handlerType);
+		private static Func<IOnPremiseInProcHandler> CreateFactory(Type type)
+		{
+			return () => (IOnPremiseInProcHandler) Activator.CreateInstance(type);
+		}
 
-                try
-                {
-                    using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(_requestTimeout)))
-                    {
-                        await handler.ProcessRequest(request, response, cts.Token);
+		protected override IOnPremiseInProcHandler CreateHandler()
+		{
+			return _handlerFactory();
+		}
+	}
 
-                        if (cts.IsCancellationRequested)
-                        {
-                            _logger.Warn("Gateway timeout");
-                            _logger.Trace("Gateway timeout. request-id={0}", request.RequestId);
+	internal class OnPremiseInProcTargetConnector<T> : OnPremiseInProcTargetConnectorBase
+		where T : IOnPremiseInProcHandler, new()
+	{
+		public OnPremiseInProcTargetConnector(int requestTimeout, ILogger logger)
+			: base(logger, requestTimeout)
+		{
+		}
 
-                            response.StatusCode = HttpStatusCode.GatewayTimeout;
-                            response.HttpHeaders = new Dictionary<string, string>()
-                            {
-                                { "X-TTRELAY-TIMEOUT", "On-Premise Target" }
-                            };
-                            response.Body = null;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Trace("Error requesting response. request-id={0}", ex, request.RequestId);
-
-                    response.StatusCode = HttpStatusCode.InternalServerError;
-                    response.HttpHeaders = new Dictionary<string, string>()
-                    {
-                        { "Content-Type", "text/plain" }
-                    };
-                    response.Body = Encoding.UTF8.GetBytes(ex.ToString());
-                }
-                finally
-                {
-                    var disposable = handler as IDisposable;
-                    if (disposable != null)
-                    {
-                        disposable.Dispose();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Trace("Error creating handler. request-id={0}", ex, request.RequestId);
-
-                response.StatusCode = HttpStatusCode.InternalServerError;
-                response.HttpHeaders = new Dictionary<string, string>()
-                {
-                    { "Content-Type", "text/plain" }
-                };
-                response.Body = Encoding.UTF8.GetBytes(ex.ToString());
-            }
-
-            response.RequestFinished = DateTime.UtcNow;
-
-            _logger.Trace("Got response. request-id={0}, status-code={1}", response.RequestId, response.StatusCode);
-
-            return response;
-        }
-    }
+		protected override IOnPremiseInProcHandler CreateHandler()
+		{
+			return new T();
+		}
+	}
 }

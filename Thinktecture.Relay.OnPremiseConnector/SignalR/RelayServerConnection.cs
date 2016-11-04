@@ -61,10 +61,7 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
             if (baseUri == null)
                 throw new ArgumentNullException(nameof(baseUri));
 
-            while (key.EndsWith("/"))
-            {
-                key = key.Substring(0, key.Length - 1);
-            }
+            key = RemoveTrailingSlashes(key);
 
             _logger.Trace("Registering on-premise web target. key={0}, baseUri={1}", key, baseUri);
             _logger.Debug("Registering on-premise web target");
@@ -72,25 +69,60 @@ namespace Thinktecture.Relay.OnPremiseConnector.SignalR
             _connectors[key] = _onPremiseTargetConnectorFactory.Create(baseUri, _requestTimeout);
         }
 
-        public void RegisterOnPremiseTarget(string key, Type handlerType)
+	    public void RegisterOnPremiseTarget(string key, Type handlerType)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
             if (handlerType == null)
                 throw new ArgumentNullException(nameof(handlerType));
 
-            while (key.EndsWith("/"))
-            {
-                key = key.Substring(0, key.Length - 1);
-            }
+			key = RemoveTrailingSlashes(key);
 
-            _logger.Trace("Registering on-premise in-proc target. key={0}, type={1}", key, handlerType);
+			_logger.Trace("Registering on-premise in-proc target. key={0}, type={1}", key, handlerType);
             _logger.Debug("Registering on-premise in-proc target");
 
             _connectors[key] = _onPremiseTargetConnectorFactory.Create(handlerType, _requestTimeout);
         }
 
-        public void RemoveOnPremiseTarget(string key)
+		public void RegisterOnPremiseTarget(string key, Func<IOnPremiseInProcHandler> handlerFactory)
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+	        if (handlerFactory == null)
+		        throw new ArgumentNullException(nameof(handlerFactory));
+
+	        key = RemoveTrailingSlashes(key);
+
+			_logger.Trace("Registering on-premise in-proc target using a handler factory. key={0}", key);
+            _logger.Debug("Registering on-premise in-proc target");
+
+            _connectors[key] = _onPremiseTargetConnectorFactory.Create(handlerFactory, _requestTimeout);
+        }
+
+	    public void RegisterOnPremiseTarget<T>(string key)
+			where T: IOnPremiseInProcHandler, new()
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+			key = RemoveTrailingSlashes(key);
+
+			_logger.Trace("Registering on-premise in-proc target. key={0}, type={1}", key, typeof(T));
+            _logger.Debug("Registering on-premise in-proc target");
+
+            _connectors[key] = _onPremiseTargetConnectorFactory.Create<T>(_requestTimeout);
+        }
+
+	    private static string RemoveTrailingSlashes(string key)
+	    {
+		    while (key.EndsWith("/"))
+		    {
+			    key = key.Substring(0, key.Length - 1);
+		    }
+		    return key;
+	    }
+
+	    public void RemoveOnPremiseTarget(string key)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));

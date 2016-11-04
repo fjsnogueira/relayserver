@@ -76,6 +76,7 @@
     <Compile Include="OnPremiseTarget\IOnPremiseTargetRequest.cs" />
     <Compile Include="OnPremiseTarget\IOnPremiseTargetResponse.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseInProcTargetConnector.cs" />
+    <Compile Include="OnPremiseTarget\OnPremiseInProcTargetConnectorBase.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseWebTargetConnector.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseTargetConnectorFactory.cs" />
     <Compile Include="OnPremiseTarget\OnPremiseTargetRequest.cs" />
