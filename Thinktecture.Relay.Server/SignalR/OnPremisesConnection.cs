@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
-using NLog.Interface;
+using NLog;
 using Thinktecture.Relay.Server.Communication;
 using Thinktecture.Relay.Server.OnPremise;
 

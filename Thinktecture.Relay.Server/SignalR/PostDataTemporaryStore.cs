@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog.Interface;
+using NLog;
 
 namespace Thinktecture.Relay.Server.SignalR
 {

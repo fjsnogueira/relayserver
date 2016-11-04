@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using NLog.Interface;
+using NLog;
 
 namespace Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget
 {

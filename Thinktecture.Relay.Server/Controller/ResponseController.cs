@@ -3,7 +3,7 @@ using System.Web.Http;
 using System.Web.Http.Results;
 using Autofac;
 using Newtonsoft.Json.Linq;
-using NLog.Interface;
+using NLog;
 using Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget;
 using Thinktecture.Relay.Server.Communication;
 

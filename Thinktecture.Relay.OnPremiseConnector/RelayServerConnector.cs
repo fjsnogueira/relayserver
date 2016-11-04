@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
-using NLog.Interface;
+using NLog;
 using Thinktecture.Relay.OnPremiseConnector.OnPremiseTarget;
 using Thinktecture.Relay.OnPremiseConnector.SignalR;
 
@@ -19,7 +19,7 @@ namespace Thinktecture.Relay.OnPremiseConnector
 			builder.RegisterType<RelayServerConnectionFactory>().As<IRelayServerConnectionFactory>();
 			builder.RegisterType<OnPremiseTargetConnectorFactory>().As<IOnPremiseTargetConnectorFactory>();
 
-			builder.Register(context => new LoggerAdapter(NLog.LogManager.GetLogger("ClientLogger"))).As<ILogger>().SingleInstance();
+			builder.Register(context => LogManager.GetLogger("ClientLogger")).As<ILogger>().SingleInstance();
 
 			_container = builder.Build();
 		}

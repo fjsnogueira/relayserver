@@ -1,6 +1,6 @@
 ﻿using EasyNetQ;
 using EasyNetQ.Loggers;
-using NLog.Interface;
+using NLog;
 using Thinktecture.Relay.Server.Configuration;
 
 namespace Thinktecture.Relay.Server.Communication.RabbitMq

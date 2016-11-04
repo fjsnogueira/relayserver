@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Configuration;
-using NLog.Interface;
+using NLog;
 
 namespace Thinktecture.Relay.Server.Configuration
 {

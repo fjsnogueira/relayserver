@@ -14,7 +14,6 @@ using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.StaticFiles;
 using Newtonsoft.Json.Serialization;
 using NLog;
-using NLog.Interface;
 using Owin;
 using Thinktecture.Relay.Server.Communication;
 using Thinktecture.Relay.Server.Communication.RabbitMq;
@@ -82,7 +81,7 @@ namespace Thinktecture.Relay.Server
 	        builder.RegisterType<OnPremiseRequestBuilder>().As<IOnPremiseRequestBuilder>();
 	        builder.RegisterType<PathSplitter>().As<IPathSplitter>();
 
-            builder.Register(context => new LoggerAdapter(LogManager.GetLogger("Server"))).As<ILogger>().SingleInstance();
+            builder.Register(context => LogManager.GetLogger("Server")).As<ILogger>().SingleInstance();
 
             var container = builder.Build();
 
